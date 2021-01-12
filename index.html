@@ -21,8 +21,6 @@
       const violeta = document.getElementById('violeta');
       const naranja = document.getElementById('naranja');
       const verde = document.getElementById('verde');
-      
-      const colours = [celeste, violeta, naranja, verde];
         
       class Game {
         
@@ -30,22 +28,37 @@
           this.initialize();
           this.level = 1;   
           this.generateSequence();
+          this.nextLevel();
         }
         
         initialize() {          
           btnEmpezar.classList.add('hide'); 
-          this.colores = { 
-            celeste, 
-            violeta, 
-            naranja, 
-            verde 
-          };
+          this.colors = [celeste, violeta, naranja, verde];
         }
         
         generateSequence() {          
-          var sequence = new Array(10).fill(0).map(item => Math.floor(Math.random() * 4));          
-          console.log(sequence);          
-        }        
+          this.sequence = new Array(10).fill(0).map(item => Math.floor(Math.random() * 4));
+        }    
+        
+        nextLevel() {
+          this.lightUpSequence();
+        }
+        
+        lightUpSequence() {          
+          for (let i = 0; i < this.level; i++) {
+            const color = this.sequence[i];
+            setTimeout(() => this.lightUpColor(color) , 1000 * i);
+          }          
+        }
+        
+        lightUpColor(color) {
+          this.colors[color].classList.add('light');
+          setTimeout( () => this.ligthDownColor(color), 350);
+        }
+        
+        ligthDownColor(color) {
+          this.colors[color].classList.remove('light');
+        }
         
       }      
       
