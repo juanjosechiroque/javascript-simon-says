@@ -7,10 +7,10 @@
   </head>
   <body>
     <div class="gameboard">
-      <div id="celeste" class="color celeste left" data-color="celeste" data-numero="1"></div>
-      <div id="violeta" class="color violeta right" data-color="violeta" data-numero="2"></div>
-      <div id="naranja" class="color naranja left" data-color="naranja" data-numero="3"></div>
-      <div id="verde" class="color verde right" data-color="verde" data-numero="4"></div>
+      <div id="celeste" class="color celeste left" data-color="celeste" data-position="0"></div>
+      <div id="violeta" class="color violeta right" data-color="violeta" data-position="1"></div>
+      <div id="naranja" class="color naranja left" data-color="naranja" data-position="2"></div>
+      <div id="verde" class="color verde right" data-color="verde" data-position="3"></div>
       <button id="btnEmpezar" class="btn-start" onclick="startGame()">Empezar a jugar!</button>
     </div>
     <script>
@@ -21,27 +21,33 @@
       const violeta = document.getElementById('violeta');
       const naranja = document.getElementById('naranja');
       const verde = document.getElementById('verde');
+      
+      const LAST_LEVEL = 3;
         
       class Game {
         
         constructor(){
-          this.initialize();
-          this.level = 1;   
-          this.generateSequence();
-          this.nextLevel();
+          this.initialize();          
+          this.generateSequence();          
+          setTimeout(this.nextLevel, 500);
         }
         
         initialize() {          
+          this.nextLevel = this.nextLevel.bind(this);
+          this.chooseColor = this.chooseColor.bind(this);
           btnEmpezar.classList.add('hide'); 
+          this.level = 1;   
           this.colors = [celeste, violeta, naranja, verde];
         }
         
         generateSequence() {          
-          this.sequence = new Array(10).fill(0).map(item => Math.floor(Math.random() * 4));
+          this.sequence = new Array(LAST_LEVEL).fill(0).map(item => Math.floor(Math.random() * 4));
         }    
         
         nextLevel() {
+          this.subLevel = 0;
           this.lightUpSequence();
+          this.addClickEvents();
         }
         
         lightUpSequence() {          
@@ -58,6 +64,45 @@
         
         ligthDownColor(color) {
           this.colors[color].classList.remove('light');
+        }
+        
+        addClickEvents() {
+          this.colors[0].addEventListener("click", this.chooseColor);
+          this.colors[1].addEventListener("click", this.chooseColor);
+          this.colors[2].addEventListener("click", this.chooseColor);
+          this.colors[3].addEventListener("click", this.chooseColor);
+        }
+        
+        removeClickEvents() {
+          this.colors[0].removeEventListener("click", this.chooseColor);
+          this.colors[1].removeEventListener("click", this.chooseColor);
+          this.colors[2].removeEventListener("click", this.chooseColor);
+          this.colors[3].removeEventListener("click", this.chooseColor);
+        }
+        
+        chooseColor(ev){
+          const color = ev.target.dataset.position;
+          this.lightUpColor(color);      
+          
+          if (color == this.sequence[this.subLevel]) {
+            this.subLevel++;
+            
+            if (this.level == this.subLevel) {
+              this.level++;
+              
+              if (this.level == (LAST_LEVEL +1)) {
+                alert('ganaste');
+              } else {
+                
+                setTimeout(this.nextLevel, 2000);
+              }
+              
+            }
+            
+          } else {
+            alert('perdiste');
+          }
+          
         }
         
       }      
