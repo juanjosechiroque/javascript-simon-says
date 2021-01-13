@@ -6,13 +6,17 @@
     <link rel="stylesheet" href="css/styles.css">
   </head>
   <body>
+    
     <div class="gameboard">
       <div id="celeste" class="color celeste left" data-color="celeste" data-position="0"></div>
       <div id="violeta" class="color violeta right" data-color="violeta" data-position="1"></div>
       <div id="naranja" class="color naranja left" data-color="naranja" data-position="2"></div>
       <div id="verde" class="color verde right" data-color="verde" data-position="3"></div>
-      <button id="btnEmpezar" class="btn-start" onclick="startGame()">Empezar a jugar!</button>
+      <button id="btnEmpezar" class="btn-start" onclick="startGame()">Start game</button>
     </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    
     <script>
       
       const btnEmpezar = document.getElementById('btnEmpezar');
@@ -26,8 +30,9 @@
         
       class Game {
         
-        constructor(){
-          this.initialize();          
+        constructor() {
+          this.initialize = this.initialize.bind(this);
+          this.initialize();
           this.generateSequence();          
           setTimeout(this.nextLevel, 500);
         }
@@ -35,9 +40,17 @@
         initialize() {          
           this.nextLevel = this.nextLevel.bind(this);
           this.chooseColor = this.chooseColor.bind(this);
-          btnEmpezar.classList.add('hide'); 
+          this.toogleBtnStart();
           this.level = 1;   
           this.colors = [celeste, violeta, naranja, verde];
+        }
+        
+        toogleBtnStart() {
+          if (btnEmpezar.classList.contains('hide')) {
+            btnEmpezar.classList.remove('hide');   
+          } else {
+            btnEmpezar.classList.add('hide');     
+          }
         }
         
         generateSequence() {          
@@ -89,21 +102,32 @@
             
             if (this.level == this.subLevel) {
               this.level++;
-              
+              this.removeClickEvents();              
               if (this.level == (LAST_LEVEL +1)) {
-                alert('ganaste');
-              } else {
-                
+                this.youWin();
+              } else {                
                 setTimeout(this.nextLevel, 2000);
-              }
-              
+              }              
             }
             
           } else {
-            alert('perdiste');
+            this.youLose();
           }
           
         }
+        
+        youWin() {
+          swal('Simon says','Congratulations! You win! :)','success')
+            .then(this.initialize);
+        }
+        
+        youLose() {
+          swal('Simon says','Sorry! You lose! :(','error')
+            .then( () => {
+              this.removeClickEvents();
+              this.initialize();
+            });          
+        }       
         
       }      
       
